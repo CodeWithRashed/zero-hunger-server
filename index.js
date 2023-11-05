@@ -65,9 +65,9 @@ async function run() {
     });
 
     //Sending Product Data to Database
-    app.post("/api/v1/add/food", async (req, res) => {
-      const productData = req.body;
-      const result = await foodCollection.insertOne(productData);
+    app.post("/api/v1/user/add/food", async (req, res) => {
+      const foodData = req.body;
+      const result = await foodCollection.insertOne(foodData);
       res.send(result);
     });
 
