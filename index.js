@@ -85,6 +85,16 @@ async function run() {
       const result = await foodCollection.findOne(query);
       res.send(result);
     });
+    
+    //sending data form email query
+    app.get("/api/v1/user/get/foods/:email", async (req, res) => {
+      const queryEmail = req.params.email
+      console.log(queryEmail)
+      const query = {donarEmail: queryEmail}
+      const cursor = foodCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     //add cart items to database
     app.post("/api/addCartItem", async (req, res) => {
@@ -93,12 +103,6 @@ async function run() {
       res.send(result);
     });
 
-    //sending cart product to user
-    app.get("/api/getCartItems", async (req, res) => {
-      const cursor = requestCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
 
     //jwt auth
     app.post("/api/jwt", async (req, res) => {
