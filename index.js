@@ -72,14 +72,14 @@ async function run() {
     });
 
     //getting products data form database
-    app.get("/api/getProduct", async (req, res) => {
+    app.get("/api/v1/user/get/foods", async (req, res) => {
       const cursor = foodCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
     //getting single product data form database
-    app.get("/api/getProduct/:id", async (req, res) => {
+    app.get("/api/v1/user/get/food/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await foodCollection.findOne(query);
