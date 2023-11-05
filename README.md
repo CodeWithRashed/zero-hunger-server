@@ -1,30 +1,29 @@
-# Zero Hunger 
-#### Zero Hunger is a food donation website. You can donate or request food for people. (This is the backend repo)
+## Brand Shop
 
- [Client Side Repo](https://github.com/Porgramming-Hero-web-course/b8a11-client-side-CodeWithRashed)
- <br>
+#### Front End Live Link
 
- [Live Project Link (Firebase)](#)
- <br>
+Live Link : [Vercel](https://brand-shop-front-end.vercel.app/)
+Live Link: [Firebase](https://brand-shop-c38f6.web.app/)
 
- [Live Project Link (Vercel)](#)
+#### Back End Server Link
 
+Server Link: [Vercel](https://brand-shop-back-end.vercel.app/)
 
-## Project Features
+# API Links
 
-## Tech Stack
-- Express
-- Dot ENV
+## Get All Products
 
+      https://brand-shop-back-end.vercel.app/api/getProduct
 
-##  API Links
- 
-### Get All Products
-	 - https://brand-shop-back-end.vercel.app/api/getProduct
-	 
-### Get Single Products
-	 https://brand-shop-back-end.vercel.app/api/getProduct/:id
+## Get Single Products
 
-### Demo
-	 https://brand-shop-back-end.vercel.app/api/getProduct/652fbf5046e0d4ecf526d545
+     https://brand-shop-back-end.vercel.app/api/getProduct/:id
 
+## Demo
+     https://brand-shop-back-end.vercel.app/api/getProduct/652fbf5046e0d4ecf526d545
+
+#### Front End Source Code:
+https://github.com/programming-hero-web-course-4/b8a10-brandshop-client-side-CodeWithRashed
+
+#### Back End Source Code:
+https://github.com/programming-hero-web-course-4/b8a10-brandshop-server-side-CodeWithRashed
