@@ -53,8 +53,15 @@ async function run() {
 
     app.post("/api/v1/add/user", async (req, res) => {
       const data = req.body;
-      const result = await zeroHungerUserCollection.insertOne(data);
-      res.send(result);
+      const email = req.body.email;
+      const query = { email: email};
+      const findResult = await zeroHungerUserCollection.findOne(query);
+      if(!findResult?.email){
+        const result = await zeroHungerUserCollection.insertOne(data);
+        res.send(result);
+        return
+      }
+      res.send({message: "user already exits"});
     });
 
     //Sending Product Data to Database
