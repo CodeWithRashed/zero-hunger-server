@@ -49,7 +49,7 @@ async function run() {
     const foodCollection = zeroHungerDB.collection("food");
 
     //Request Item Collections
-    const requestCollection = zeroHungerDB.collection("requestItems");
+    const requestCollection = zeroHungerDB.collection("request");
 
     app.post("/api/v1/add/user", async (req, res) => {
       const data = req.body;
@@ -97,7 +97,7 @@ async function run() {
     });
 
     //Updating Product Data
-    app.put("/api/v1/user/update/food:id", async (req, res) => {
+    app.put("/api/v1/user/update/food/:id", async (req, res) => {
       const id = req.params.id;
       const changeFood = req.body;
       const filter = { _id: new ObjectId(id) };
@@ -128,10 +128,10 @@ async function run() {
     ("");
   }
 
-  //add cart items to database
-  app.post("/api/addCartItem", async (req, res) => {
-    const cartItem = req.body;
-    const result = await requestCollection.insertOne(cartItem);
+  //add request food items to database
+  app.post("/api/v1/food/request/add", async (req, res) => {
+    const foodRequest = req.body;
+    const result = await requestCollection.insertOne(foodRequest);
     res.send(result);
   });
 
