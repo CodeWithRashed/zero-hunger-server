@@ -15,7 +15,7 @@ const port = process.env.PORT || 3000;
 //Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://zero-hunger-client-five.vercel.app", "https://zero-hunger-a4e14.firebaseapp.com", "https://zero-hunger-a4e14.web.app"], 
     credentials: true,
   })
 );
