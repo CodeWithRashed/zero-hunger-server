@@ -6,7 +6,7 @@ import "dotenv/config";
 
 //Import jwt
 import jwt from "jsonwebtoken";
-import cookieParser from 'cookie-parser'
+import cookieParser from "cookie-parser";
 
 //Database Dependency
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
@@ -40,7 +40,7 @@ const client = new MongoClient(uri, {
 //Database Connect Function
 async function run() {
   try {
-   client.connect()
+    client.connect();
     //Connect To Cluster Database
     const zeroHungerDB = client.db("zeroHunger");
     //User Collection
@@ -54,14 +54,14 @@ async function run() {
     app.post("/api/v1/add/user", async (req, res) => {
       const data = req.body;
       const email = req.body.email;
-      const query = { email: email};
+      const query = { email: email };
       const findResult = await zeroHungerUserCollection.findOne(query);
-      if(!findResult?.email){
+      if (!findResult?.email) {
         const result = await zeroHungerUserCollection.insertOne(data);
         res.send(result);
-        return
+        return;
       }
-      res.send({message: "user already exits"});
+      res.send({ message: "user already exits" });
     });
 
     //Sending Product Data to Database
@@ -85,75 +85,41 @@ async function run() {
       const result = await foodCollection.findOne(query);
       res.send(result);
     });
-    
-    //sending data form email query
+
+    //getting data form email query
     app.get("/api/v1/user/get/foods/:email", async (req, res) => {
-      const queryEmail = req.params.email
-      console.log(queryEmail)
-      const query = {donarEmail: queryEmail}
+      const queryEmail = req.params.email;
+      console.log(queryEmail);
+      const query = { donarEmail: queryEmail };
       const cursor = foodCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
 
-    //add cart items to database
-    app.post("/api/addCartItem", async (req, res) => {
-      const cartItem = req.body;
-      const result = await requestCollection.insertOne(cartItem);
-      res.send(result);
-    });
-
-
-    //jwt auth
-    app.post("/api/jwt", async (req, res) => {
-      const userEmail = req.body;
-      // jwt.sign("payload", "secret", "option")
-      console.log(userEmail);
-      const secret =
-        "681a49f2c6a81a86dfc89593e6640c7699075ff412968bce2647d71e5680225f88fc26941aa5b5c3bc46aeef490ba1b439779bc8d174d2547507c230418f9e95";
-      const token = jwt.sign(userEmail, secret, { expiresIn: "1h" });
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      });
-      res.send({ message: "cookie set successful" });
-    });
-
-    //Jwt Clear Cookie
-    app.post("/api/clear", async (req, res) => {
-      res.clearCookie('token').send({ message: "cookie cleared" });
-      console.log("cleared");
-    });
-
-    //delete cart product to user
-    app.delete("/api/delete/:id", async (req, res) => {
+    //Updating Product Data
+    app.put("/api/v1/user/update/food:id", async (req, res) => {
       const id = req.params.id;
-      const query = { id: id };
-      const result = await requestCollection.deleteOne(query);
-      res.send(result);
-    });
-
-    app.put("/api/update/:id", async (req, res) => {
-      const id = req.params.id;
-      const changeProduct = req.body;
+      const changeFood = req.body;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
 
-      const updateProduct = {
+      const updatedFood = {
         $set: {
-          productName: changeProduct.productName,
-          productImage: changeProduct.productImage,
-          brandName: changeProduct.brandName,
-          productType: changeProduct.productType,
-          productPrice: changeProduct.productPrice,
-          productRatting: changeProduct.productRatting,
-          productDescription: changeProduct.productDescription,
+          donarName: changeFood.donarImage,
+          donarImage: changeFood.donarImage,
+          foodName: changeFood.foodName,
+          foodImage: changeFood.foodImage,
+          foodQuantity: changeFood.foodQuantity,
+          expireDate: changeFood.expireDate,
+          donarEmail: changeFood.donarEmail,
+          pickupLocation: changeFood.pickupLocation,
+          additionalNote: changeFood.additionalNote,
+          deliveryStatus: changeFood.deliveryStatus,
         },
       };
       const result = await foodCollection.updateOne(
         filter,
-        updateProduct,
+        updatedFood,
         options
       );
       res.send(result);
@@ -161,6 +127,43 @@ async function run() {
   } finally {
     ("");
   }
+
+  //add cart items to database
+  app.post("/api/addCartItem", async (req, res) => {
+    const cartItem = req.body;
+    const result = await requestCollection.insertOne(cartItem);
+    res.send(result);
+  });
+
+  //jwt auth
+  app.post("/api/jwt", async (req, res) => {
+    const userEmail = req.body;
+    // jwt.sign("payload", "secret", "option")
+    console.log(userEmail);
+    const secret =
+      "681a49f2c6a81a86dfc89593e6640c7699075ff412968bce2647d71e5680225f88fc26941aa5b5c3bc46aeef490ba1b439779bc8d174d2547507c230418f9e95";
+    const token = jwt.sign(userEmail, secret, { expiresIn: "1h" });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.send({ message: "cookie set successful" });
+  });
+
+  //Jwt Clear Cookie
+  app.post("/api/clear", async (req, res) => {
+    res.clearCookie("token").send({ message: "cookie cleared" });
+    console.log("cleared");
+  });
+
+  //delete cart product to user
+  app.delete("/api/delete/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { id: id };
+    const result = await requestCollection.deleteOne(query);
+    res.send(result);
+  });
 }
 run();
 
