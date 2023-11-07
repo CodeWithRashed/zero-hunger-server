@@ -148,12 +148,54 @@ async function run() {
     });
 
 
-      app.delete("/api/v1/request/delete/:id", async (req, res) => {
+    app.delete("/api/v1/request/delete/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) };
     const result = await requestCollection.deleteOne(query);
     res.send(result);
   });
+
+
+  //Updating Request Status
+  app.put("/api/v1/request/update/:id", async (req, res) => {
+    const id = req.params.id;
+    const updatedStatus = req.body;
+    const filter = { _id: new ObjectId(id) };
+    const options = { upsert: true };
+
+    const updatedRequest = {
+      $set: {
+        requestStatus: updatedStatus.requestStatus,
+      },
+    };
+    const result = await requestCollection.updateOne(
+      filter,
+      updatedRequest,
+      options
+    );
+    res.send(result);
+  });
+
+  //Updating Food Status
+  app.put("/api/v1/user/update/food/:id", async (req, res) => {
+    const id = req.params.id;
+    const changeStatus = req.body;
+    const filter = { _id: new ObjectId(id) };
+    const options = { upsert: true };
+
+    const updatedFood = {
+      $set: {
+        deliveryStatus: changeStatus.deliveryStatus,
+      },
+    };
+    const result = await foodCollection.updateOne(
+      filter,
+      updatedFood,
+      options
+    );
+    res.send(result);
+  });
+
   } finally {
     ("");
   }
