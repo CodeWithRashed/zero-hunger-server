@@ -15,7 +15,12 @@ const port = process.env.PORT || 3000;
 //Middlewares
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://zero-hunger-client-five.vercel.app", "https://zero-hunger-a4e14.firebaseapp.com", "https://zero-hunger-a4e14.web.app"], 
+    origin: [
+      "http://localhost:5173",
+      "https://zero-hunger-client-five.vercel.app",
+      "https://zero-hunger-a4e14.firebaseapp.com",
+      "https://zero-hunger-a4e14.web.app",
+    ],
     credentials: true,
   })
 );
@@ -86,13 +91,13 @@ async function run() {
       res.send(result);
     });
 
-      //getting request data form database
-      app.get("/api/v1/user/get/request/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { foodId: id};
-        const result = await requestCollection.findOne(query);
-        res.send(result);
-      });
+    //getting request data form database
+    app.get("/api/v1/user/get/request/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { foodId: id };
+      const result = await requestCollection.findOne(query);
+      res.send(result);
+    });
 
     //getting data form email query
     app.get("/api/v1/user/get/foods/:email", async (req, res) => {
@@ -147,55 +152,43 @@ async function run() {
       res.send(result);
     });
 
-
     app.delete("/api/v1/request/delete/:id", async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) };
-    const result = await requestCollection.deleteOne(query);
-    res.send(result);
-  });
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await requestCollection.deleteOne(query);
+      res.send(result);
+    });
 
+    //Updating Request Status
+    app.put("/api/v1/request/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
 
-  //Updating Request Status
-  app.put("/api/v1/request/update/:id", async (req, res) => {
-    const id = req.params.id;
-    const updatedStatus = req.body;
-    const filter = { _id: new ObjectId(id) };
-    const options = { upsert: true };
+      const updatedRequest = {
+        $set: {
+          requestStatus: "Delivered",
+        },
+      };
+      const result = await requestCollection.updateOne(filter, updatedRequest);
+      res.send(result);
+    });
 
-    const updatedRequest = {
-      $set: {
-        requestStatus: updatedStatus.requestStatus,
-      },
-    };
-    const result = await requestCollection.updateOne(
-      filter,
-      updatedRequest,
-      options
-    );
-    res.send(result);
-  });
-
-  //Updating Food Status
-  app.put("/api/v1/user/update/food/:id", async (req, res) => {
-    const id = req.params.id;
-    const changeStatus = req.body;
-    const filter = { _id: new ObjectId(id) };
-    const options = { upsert: true };
-
-    const updatedFood = {
-      $set: {
-        deliveryStatus: changeStatus.deliveryStatus,
-      },
-    };
-    const result = await foodCollection.updateOne(
-      filter,
-      updatedFood,
-      options
-    );
-    res.send(result);
-  });
-
+    //Updating Food Status
+    app.patch("/api/v1/user/update/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const deliveryStatus = req.body.deliveryStatus; 
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: false };
+    
+      const updatedStatusData = {
+        $set: {
+          deliveryStatus: deliveryStatus,
+        },
+      };
+    
+      const result = await foodCollection.updateOne(filter, updatedStatusData, options);
+      res.send(result);
+    });
   } finally {
     ("");
   }
