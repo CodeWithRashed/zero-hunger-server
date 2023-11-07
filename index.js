@@ -138,6 +138,14 @@ async function run() {
       res.send(result);
     });
 
+    //Delete food from database
+      app.delete("/api/v1/user/delete/food/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await foodCollection.deleteOne(query);
+    res.send(result);
+  });
+
     //add request food items to database
     app.post("/api/v1/food/request/add", async (req, res) => {
       const foodRequest = req.body;
