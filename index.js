@@ -86,6 +86,14 @@ async function run() {
       res.send(result);
     });
 
+      //getting request data form database
+      app.get("/api/v1/user/get/request/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { foodId: id};
+        const result = await requestCollection.findOne(query);
+        res.send(result);
+      });
+
     //getting data form email query
     app.get("/api/v1/user/get/foods/:email", async (req, res) => {
       const queryEmail = req.params.email;
