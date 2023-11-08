@@ -115,12 +115,7 @@ async function run() {
     //getting data form email query
     app.get("/api/v1/user/get/foods", async (req, res) => {
       let query = {};
-      //  verifyToken,
-      console.log();
       if (req?.query?.email) {
-        // if (req.user.email !== req.query.email) {
-        //   return res.status(401).send({ message: "Unauthorized Access" });
-        // }
         query = {
           donarEmail: req.query.email,
         };
@@ -136,7 +131,7 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
-    
+
     //Updating Product Data
     app.put("/api/v1/user/update/food/:id", async (req, res) => {
       const id = req.params.id;
@@ -233,8 +228,6 @@ async function run() {
     // JWT AUTH REQUEST
     app.post("/api/v1/auth/jwt", async (req, res) => {
       const userEmail = req.body;
-      // jwt.sign("payload", "secret", "option")
-      console.log(userEmail);
       const cookieMaxAge = 24 * 60 * 60 * 1000;
 
       const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, {

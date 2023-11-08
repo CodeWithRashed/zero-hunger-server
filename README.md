@@ -11,6 +11,11 @@
 [Live Project Link (Vercel)](https://zero-hunger-client-five.vercel.app)
 
 ## Project Features
+- User data saved on database. 
+- Update delivery status api added. 
+- Food api available for all user. 
+- Data protected with JWT auth.
+- Data sorting in backend. 
 
 ## Tech Stack
 
@@ -19,17 +24,3 @@
 - Cores
 - Axios
 
-## API Links
-
-### Get All Products
-
-     - https://brand-shop-back-end.vercel.app/api/getProduct
-
-
-### Get Single Products
-
-     https://brand-shop-back-end.vercel.app/api/getProduct/:id
-
-### Demo
-
-     https://brand-shop-back-end.vercel.app/api/getProduct/652fbf5046e0d4ecf526d545
