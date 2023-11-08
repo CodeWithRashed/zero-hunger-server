@@ -214,6 +214,7 @@ async function run() {
       res.cookie("jwtAuthToken", token, {
           httpOnly: true,
           secure: false,
+          sameSite: "none",
           expires: new Date(Date.now() + cookieMaxAge)
         })
         .send({ message: "cookie added" });
