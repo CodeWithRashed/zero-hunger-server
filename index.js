@@ -222,7 +222,7 @@ async function run() {
     // Jwt Clear Cookie
     app.post("/api/v1/auth/jwt/clear", async (req, res) => {
       res.clearCookie("jwtAuthToken").send({ message: "cookie cleared" });
-      console.log("cleared");
+    
     });
   } finally {
     ("");
