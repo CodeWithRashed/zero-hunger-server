@@ -96,13 +96,6 @@ async function run() {
       res.send(result);
     });
 
-    // //getting products data form database
-    // app.get("/api/v1/user/get/foods", async (req, res) => {
-    //   const cursor = foodCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
-
     //getting single product data form database
     app.get("/api/v1/user/get/food/:id", async (req, res) => {
       const id = req.params.id;
@@ -119,10 +112,8 @@ async function run() {
       res.send(result);
     });
 
-  
-
     //getting data form email query
-    app.get("/api/v1/user/get/foods", logger,  async (req, res) => {
+    app.get("/api/v1/user/get/foods", async (req, res) => {
       let query = {};
       //  verifyToken,
       console.log();
@@ -139,6 +130,13 @@ async function run() {
       res.send(result);
     });
 
+    //getting user data
+    app.get("/api/v1/user/get/users", async (req, res) => {
+      const cursor = zeroHungerUserCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    
     //Updating Product Data
     app.put("/api/v1/user/update/food/:id", async (req, res) => {
       const id = req.params.id;
