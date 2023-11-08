@@ -27,7 +27,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-//Server Port
+
 
 //Database Connection
 //URI
@@ -139,12 +139,12 @@ async function run() {
     });
 
     //Delete food from database
-      app.delete("/api/v1/user/delete/food/:id", async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) };
-    const result = await foodCollection.deleteOne(query);
-    res.send(result);
-  });
+    app.delete("/api/v1/user/delete/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await foodCollection.deleteOne(query);
+      res.send(result);
+    });
 
     //add request food items to database
     app.post("/api/v1/food/request/add", async (req, res) => {
@@ -184,52 +184,51 @@ async function run() {
     //Updating Food Status
     app.patch("/api/v1/user/update/food/:id", async (req, res) => {
       const id = req.params.id;
-      const deliveryStatus = req.body.deliveryStatus; 
+      const deliveryStatus = req.body.deliveryStatus;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: false };
-    
+
       const updatedStatusData = {
         $set: {
           deliveryStatus: deliveryStatus,
         },
       };
-    
-      const result = await foodCollection.updateOne(filter, updatedStatusData, options);
+
+      const result = await foodCollection.updateOne(
+        filter,
+        updatedStatusData,
+        options
+      );
       res.send(result);
+    });
+
+    // JWT AUTH REQUEST
+    app.post("/api/v1/auth/jwt", async (req, res) => {
+      const userEmail = req.body;
+      // jwt.sign("payload", "secret", "option")
+      console.log(userEmail);
+      const cookieMaxAge = 24 * 60 * 60 * 1000;
+      const secret =
+        "681a49f2c6a81a86dfc89593e6640c7699075ff412968bce2647d71e5680225f88fc26941aa5b5c3bc46aeef490ba1b439779bc8d174d2547507c230418f9e95";
+      const token = jwt.sign(userEmail, secret, { expiresIn: "24h" });
+      res.cookie("jwtAuthToken", token, {
+          httpOnly: true,
+          secure: false,
+          expires: new Date(Date.now() + cookieMaxAge)
+        })
+        .send({ message: "cookie added" });
+    });
+
+    // Jwt Clear Cookie
+    app.post("/api/v1/auth/jwt/clear", async (req, res) => {
+      res.clearCookie("jwtAuthToken").send({ message: "cookie cleared" });
+      console.log("cleared");
     });
   } finally {
     ("");
   }
 
-  // //jwt auth
-  // app.post("/api/jwt", async (req, res) => {
-  //   const userEmail = req.body;
-  //   // jwt.sign("payload", "secret", "option")
-  //   console.log(userEmail);
-  //   const secret =
-  //     "681a49f2c6a81a86dfc89593e6640c7699075ff412968bce2647d71e5680225f88fc26941aa5b5c3bc46aeef490ba1b439779bc8d174d2547507c230418f9e95";
-  //   const token = jwt.sign(userEmail, secret, { expiresIn: "1h" });
-  //   res.cookie("token", token, {
-  //     httpOnly: true,
-  //     secure: true,
-  //     sameSite: "none",
-  //   });
-  //   res.send({ message: "cookie set successful" });
-  // });
-
-  // //Jwt Clear Cookie
-  // app.post("/api/clear", async (req, res) => {
-  //   res.clearCookie("token").send({ message: "cookie cleared" });
-  //   console.log("cleared");
-  // });
-
-  // //delete cart product to user
-  // app.delete("/api/delete/:id", async (req, res) => {
-  //   const id = req.params.id;
-  //   const query = { id: id };
-  //   const result = await requestCollection.deleteOne(query);
-  //   res.send(result);
-  // });
+  
 }
 run();
 
