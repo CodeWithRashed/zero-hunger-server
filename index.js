@@ -27,8 +27,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-
-
 //Database Connection
 //URI
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@cluster0.h9t3k.mongodb.net/?retryWrites=true&w=majority`;
@@ -56,6 +54,28 @@ async function run() {
     //Request Item Collections
     const requestCollection = zeroHungerDB.collection("request");
 
+    ///VERIFY TOKEN AND USER
+
+    //VERIFY MIDDLEWARES
+    const logger = (req, res, next) => {
+      next();
+    };
+
+    const verifyToken = (req, res, next) => {
+      const token = req?.cookies?.token;
+      if (!token) {
+        return res.status(401).send({ message: "Unauthorized Access" });
+      }
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: "Unauthorized Access" });
+        }
+        req.user = decoded;
+
+        next();
+      });
+    };
+
     app.post("/api/v1/add/user", async (req, res) => {
       const data = req.body;
       const email = req.body.email;
@@ -76,12 +96,12 @@ async function run() {
       res.send(result);
     });
 
-    //getting products data form database
-    app.get("/api/v1/user/get/foods", async (req, res) => {
-      const cursor = foodCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
+    // //getting products data form database
+    // app.get("/api/v1/user/get/foods", async (req, res) => {
+    //   const cursor = foodCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
 
     //getting single product data form database
     app.get("/api/v1/user/get/food/:id", async (req, res) => {
@@ -99,11 +119,21 @@ async function run() {
       res.send(result);
     });
 
+  
+
     //getting data form email query
-    app.get("/api/v1/user/get/foods/:email", async (req, res) => {
-      const queryEmail = req.params.email;
-      console.log(queryEmail);
-      const query = { donarEmail: queryEmail };
+    app.get("/api/v1/user/get/foods", logger,  async (req, res) => {
+      let query = {};
+      //  verifyToken,
+      console.log();
+      if (req?.query?.email) {
+        // if (req.user.email !== req.query.email) {
+        //   return res.status(401).send({ message: "Unauthorized Access" });
+        // }
+        query = {
+          donarEmail: req.query.email,
+        };
+      }
       const cursor = foodCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
@@ -202,61 +232,39 @@ async function run() {
       res.send(result);
     });
 
-///VERIFY TOKEN AND USER
-
-//VERIFY MIDDLEWARES
-const logger = (req, res, next) =>{
-  console.log('log: info', req.method, req.url);
-  next();
-}
-
-const verifyToken = (req, res, next) =>{
-  const token = req?.cookies?.token;
-  if(!token){
-      return res.status(401).send({message: 'unauthorized access'})
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
-      if(err){
-          return res.status(401).send({message: 'unauthorized access'})
-      }
-      req.user = decoded;
-      next();
-  })
-}
-
-
-
-
     // JWT AUTH REQUEST
     app.post("/api/v1/auth/jwt", async (req, res) => {
       const userEmail = req.body;
       // jwt.sign("payload", "secret", "option")
       console.log(userEmail);
       const cookieMaxAge = 24 * 60 * 60 * 1000;
- 
-      const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "24h" });
-      res.cookie("jwtAuthToken", token, {
+
+      const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "24h",
+      });
+      res
+        .cookie("jwtAuthToken", token, {
           httpOnly: true,
           secure: true,
           sameSite: "none",
-          expires: new Date(Date.now() + cookieMaxAge)
+          expires: new Date(Date.now() + cookieMaxAge),
         })
         .send({ message: "cookie added" });
     });
 
     // Jwt Clear Cookie
     app.post("/api/v1/auth/jwt/clear", async (req, res) => {
-      res.clearCookie("jwtAuthToken").send({ message: "cookie cleared" });
-    
+      res
+        .clearCookie("jwtAuthToken", {
+          maxAge: 0,
+          secure: process.env.NODE_ENV === "production" ? true : false,
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        })
+        .send({ success: true });
     });
-
-
-
   } finally {
     ("");
   }
-
-  
 }
 run();
 
