@@ -202,18 +202,42 @@ async function run() {
       res.send(result);
     });
 
+///VERIFY TOKEN AND USER
+
+//VERIFY MIDDLEWARES
+const logger = (req, res, next) =>{
+  console.log('log: info', req.method, req.url);
+  next();
+}
+
+const verifyToken = (req, res, next) =>{
+  const token = req?.cookies?.token;
+  if(!token){
+      return res.status(401).send({message: 'unauthorized access'})
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
+      if(err){
+          return res.status(401).send({message: 'unauthorized access'})
+      }
+      req.user = decoded;
+      next();
+  })
+}
+
+
+
+
     // JWT AUTH REQUEST
     app.post("/api/v1/auth/jwt", async (req, res) => {
       const userEmail = req.body;
       // jwt.sign("payload", "secret", "option")
       console.log(userEmail);
       const cookieMaxAge = 24 * 60 * 60 * 1000;
-      const secret =
-        "681a49f2c6a81a86dfc89593e6640c7699075ff412968bce2647d71e5680225f88fc26941aa5b5c3bc46aeef490ba1b439779bc8d174d2547507c230418f9e95";
-      const token = jwt.sign(userEmail, secret, { expiresIn: "24h" });
+ 
+      const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "24h" });
       res.cookie("jwtAuthToken", token, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: "none",
           expires: new Date(Date.now() + cookieMaxAge)
         })
@@ -225,6 +249,9 @@ async function run() {
       res.clearCookie("jwtAuthToken").send({ message: "cookie cleared" });
     
     });
+
+
+
   } finally {
     ("");
   }
