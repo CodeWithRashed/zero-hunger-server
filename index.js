@@ -61,23 +61,6 @@ async function run() {
     const requestCollection = zeroHungerDB.collection("request");
 
     ///AUTH ADN SECURITY VERIFY TOKEN AND USER///
-
-    //Verify Json Web Token
-    const verifyToken = (req, res, next) => {
-      const token = req?.cookies?.token;
-
-      // if (!token) {
-      //   return res.status(401).send({ message: "Unauthorized Access" });
-      // }
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        // if (err) {
-        //   return res.status(401).send({ message: "Unauthorized Access" });
-        // }
-        req.user = decoded;
-
-        next();
-      });
-    };
     //Create Json web token
     app.post("/api/v1/auth/jwt", async (req, res) => {
       const userEmail = req.body;
