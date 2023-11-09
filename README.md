@@ -24,3 +24,13 @@
 - Cores
 - Axios
 
+ ### Get All Foods
+	 - https://zero-hunger-server.vercel.app
+
+### Get Single Food (Protected With JWT)
+	 https://zero-hunger-server.vercel.app
+
+
+### Getting User Specific Food
+#### If logged user try to fetch others data he will get "Unauthorized Access"
+	 https://brand-shop-back-end.vercel.app/api/getProduct/652fbf5046e0d4ecf526d545
